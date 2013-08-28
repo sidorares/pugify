@@ -1,0 +1,40 @@
+{
+  "name": "browserify-jade",
+  "version": "0.0.1",
+  "description": "browserify v2 plugin for jade with sourcemaps support",
+  "main": "index.js",
+  "dependencies": {
+    "through": "~2.2.0",
+    "convert-source-map": "~0.2.3",
+    "source-map": "~0.1.29",
+    "jade": "~0.35.0"
+  },
+  "devDependencies": {
+    "tap": "~0.4.0",
+    "browserify": "2.x"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sidorares/browserify-jade.git"
+  },
+  "homepage": "https://github.com/sidorares/browserify-jade",
+  "keywords": [
+    "browserify",
+    "v2",
+    "jade",
+    "plugin",
+    "transform",
+    "source maps",
+    "sourcemaps"
+  ],
+  "contributors": [
+    {
+      "name": "Andrey Sidorov",
+      "email": "sidorares@yandex.ru"
+    }
+  ],
+  "license": "MIT"
+}
