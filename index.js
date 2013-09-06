@@ -44,11 +44,10 @@ function withSourceMap(src, compiled, name) {
         }
       });
     }
-    if (l.match(/^jade\.debug/)) {
+    if (l.match(/^jade\.debug/) && !l.match(/return/)) {
       compiledLines[lineno] = '';
     }
   });
-  compiled = compiledLines.join('\n');
   generator.setSourceContent(name, src);
 
   var map = convert.fromJSON(generator.toString());
