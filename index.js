@@ -4,7 +4,7 @@ var through   = require('through');
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert   = require('convert-source-map');
 
-var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=function(params) { params.require = require; return (\n";
+var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=function(params) { if (params) {params.require = require;} return (\n";
 var SUFFIX = ")(params); }";
 
 module.exports = function (file) {
@@ -63,8 +63,8 @@ function withSourceMap(src, compiled, name) {
   generator.setSourceContent(name, src);
 
   var map = convert.fromJSON(generator.toString());
-  //compiledLines.push(map.toComment());
-
+  compiledLines.push(SUFFIX);
+  compiledLines.push(map.toComment());
   return compiledLines.join('\n');
 }
 
@@ -77,5 +77,5 @@ function compile(file, template) {
         ,pretty: true
     });
     var generated = fn.toString();
-    return PREFIX + withSourceMap(template, generated, file) + SUFFIX;
+    return PREFIX + withSourceMap(template, generated, file);
 }
