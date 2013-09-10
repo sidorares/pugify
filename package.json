@@ -1,6 +1,6 @@
 {
   "name": "browserify-jade",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "browserify v2 plugin for jade with sourcemaps support",
   "main": "index.js",
   "dependencies": {
