@@ -6,8 +6,10 @@
   "dependencies": {
     "through": "~2.2.0",
     "convert-source-map": "~0.2.3",
-    "source-map": "~0.1.29",
-    "jade": "~0.35.0"
+    "source-map": "~0.1.29"
+  },
+  "peerDependencies": {
+    "jade": "*"
   },
   "devDependencies": {
     "tap": "~0.4.0",
