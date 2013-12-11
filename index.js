@@ -91,8 +91,8 @@ function withSourceMap(src, compiled, name) {
 }
 
 function compile(file, template, options) {
-    opts.filename= file;
-    var fn =  jade.compile(template, opts);
+    options.filename= file;
+    var fn =  jade.compile(template, options);
     var generated = fn.toString();
     return PREFIX + withSourceMap(template, generated, file);
 }
