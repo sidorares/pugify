@@ -7,7 +7,26 @@ var convert   = require('convert-source-map');
 var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=function(params) { if (params) {params.require = require;} return (\n";
 var SUFFIX = ")(params); }";
 
-module.exports = function (file) {
+var defaultJadeOptions = {
+  client: true,
+  path: __dirname,
+  compileDebug: true,
+  pretty: true,
+};
+
+function getTransformFn(options) {
+  var key;
+  var opts = {};
+  for(key in defaultJadeOptions) {
+    opts[key] = defaultJadeOptions[key];
+  }
+
+  options = options || {};
+  for(key in options) {
+    opts[key] = options[key];
+  }
+
+  return function (file) {
     if (!/\.jade$/.test(file)) return through();
 
     var data = '';
@@ -17,12 +36,15 @@ module.exports = function (file) {
       data += buf;
     }
     function end () {
-        var result = compile(file, data);
+        var result = compile(file, data, opts);
         this.queue(result);
         this.queue(null);
     }
-};
+} ;
+}
 
+module.exports = getTransformFn();
+module.exports.jade = getTransformFn;
 module.exports.root = null;
 
 function replaceMatchWith(match, newContent)
@@ -68,14 +90,9 @@ function withSourceMap(src, compiled, name) {
   return compiledLines.join('\n');
 }
 
-function compile(file, template) {
-    var fn =  jade.compile(template, {
-        client: true
-        ,filename:file
-        ,path: __dirname
-        ,compileDebug: true
-        ,pretty: true
-    });
+function compile(file, template, options) {
+    opts.filename= file;
+    var fn =  jade.compile(template, opts);
     var generated = fn.toString();
     return PREFIX + withSourceMap(template, generated, file);
 }
