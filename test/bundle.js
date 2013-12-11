@@ -22,4 +22,4 @@ function bundle (file) {
     });
 }
 
-bundle('/../example/foo.js');
+bundle('/../example/bar.js');
