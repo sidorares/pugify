@@ -11,15 +11,18 @@ function bundle (file) {
         b.transform(__dirname + '/..');
         b.bundle(function (err, src) {
             if (err) t.fail(err);
-            vm.runInNewContext(src, {
-                console: { log: log }
-            });
+            testBundle(src, t);
         });
-
-        function log (msg) {
-            t.equal(msg, 555);
-        }
     });
 }
 
 bundle('/../example/bar.js');
+
+function testBundle(src, t) {
+    function log (msg) {
+        t.equal(msg, 555);
+    }
+    vm.runInNewContext(src, {
+        console: { log: log }
+    });
+}
