@@ -74,7 +74,7 @@ function compile(file, template) {
         ,filename:file
         ,path: __dirname
         ,compileDebug: true
-        ,pretty: true
+        ,pretty: false
     });
     var generated = fn.toString();
     return PREFIX + withSourceMap(template, generated, file);
