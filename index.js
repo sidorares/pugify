@@ -8,7 +8,6 @@ var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=functio
 var SUFFIX = ")(params); }";
 
 var defaultJadeOptions = {
-  client: true,
   path: __dirname,
   compileDebug: true,
   pretty: true,
@@ -92,7 +91,7 @@ function withSourceMap(src, compiled, name) {
 
 function compile(file, template, options) {
     options.filename= file;
-    var fn =  jade.compile(template, options);
+    var fn =  jade.compileClient(template, options);
     var generated = fn.toString();
     return PREFIX + withSourceMap(template, generated, file);
 }
