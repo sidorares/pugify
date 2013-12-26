@@ -8,7 +8,6 @@ var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=functio
 var SUFFIX = ")(params); }";
 
 var defaultJadeOptions = {
-  client: true,
   path: __dirname,
   compileDebug: true,
   pretty: true,
@@ -61,21 +60,27 @@ function withSourceMap(src, compiled, name) {
   var generator = new SourceMapGenerator({file: name + '.js'});
 
   compiledLines.forEach(function(l, lineno) {
-    var m = l.match(/^jade\.debug\.unshift\(\{ lineno: ([0-9]+)/);
+    var m = l.match(/^jade(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
     if (m) {
-      generator.addMapping({
-        generated: {
-          line: lineno+2,
-          column: 0
-        },
-        source: name,
-        original: {
-          line: Number(m[1]),
-          column: 0
-        }
-      });
+      var originalLine = Number(m[2]);
+      var generatedLine = lineno + 2;
+
+      if (originalLine > 0) {
+        generator.addMapping({
+          generated: {
+            line: generatedLine,
+            column: 0
+          },
+          source: name,
+          original: {
+            line: originalLine,
+            column: 0
+          }
+        });
+      }
     }
-    var debugRe = /jade\.debug\.(shift|unshift)\([^)]*\);?/;
+
+    var debugRe = /jade(_|\.)debug\.(shift|unshift)\([^)]*\);?/;
     var match;
     while(match = l.match(debugRe)) {
       l = replaceMatchWith(match, '');
@@ -92,7 +97,15 @@ function withSourceMap(src, compiled, name) {
 
 function compile(file, template, options) {
     options.filename= file;
-    var fn =  jade.compile(template, options);
+    var fn;
+    if(jade.compileClient) {
+      fn = jade.compileClient(template, options);
+    } else {
+      // jade < 1.0
+      options.client = true;
+      fn = jade.compile(template, options);
+    }
+
     var generated = fn.toString();
     return PREFIX + withSourceMap(template, generated, file);
 }
