@@ -9,7 +9,7 @@
     "source-map": "~0.1.29"
   },
   "peerDependencies": {
-    "jade": ">=1.0.0"
+    "jade": "*"
   },
   "devDependencies": {
     "tap": "~0.4.0",
