@@ -6,7 +6,8 @@
   "dependencies": {
     "through": "~2.2.0",
     "convert-source-map": "~0.2.3",
-    "source-map": "~0.1.29"
+    "source-map": "~0.1.29",
+    "browserify-transform-tools": "~1.2.1"
   },
   "peerDependencies": {
     "jade": "*"
