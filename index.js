@@ -1,5 +1,6 @@
-var jade      = require('jade');
-var through   = require('through');
+var jade           = require('jade');
+var through        = require('through');
+var transformTools = require('browserify-transform-tools');
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert   = require('convert-source-map');
@@ -35,11 +36,21 @@ function getTransformFn(options) {
       data += buf;
     }
     function end () {
+      var _this = this;
+      configData = transformTools.loadTransformConfig('browserify-jade', file, function(err, configData) {
+        if(configData) {
+          var config = configData.config || {};
+          for(key in config) {
+            opts[key] = config[key];
+          }
+        }
+
         var result = compile(file, data, opts);
-        this.queue(result);
-        this.queue(null);
+        _this.queue(result);
+        _this.queue(null);
+      });
     }
-} ;
+  };
 }
 
 module.exports = getTransformFn();
