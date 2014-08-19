@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var jade           = require('jade');
 var through        = require('through');
 var transformTools = require('browserify-transform-tools');
@@ -56,6 +58,14 @@ function getTransformFn(options) {
 module.exports = getTransformFn();
 module.exports.jade = getTransformFn;
 module.exports.root = null;
+module.exports.register = register;
+
+function register() {
+  require.extensions['.jade'] = function(module, filename) {
+    var js = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
+    return module._compile(js, filename);
+  }
+}
 
 function replaceMatchWith(match, newContent)
 {
