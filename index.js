@@ -7,8 +7,7 @@ var transformTools = require('browserify-transform-tools');
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert   = require('convert-source-map');
 
-var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=function(params) { if (params) {params.require = require;} return (\n";
-var SUFFIX = ")(params); }";
+var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=";
 
 var defaultJadeOptions = {
   path: __dirname,
@@ -111,7 +110,6 @@ function withSourceMap(src, compiled, name) {
   generator.setSourceContent(name, src);
 
   var map = convert.fromJSON(generator.toString());
-  compiledLines.push(SUFFIX);
   compiledLines.push(map.toComment());
   return compiledLines.join('\n');
 }
