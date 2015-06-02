@@ -1,13 +1,13 @@
 {
   "name": "browserify-jade",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "browserify v2 plugin for jade with sourcemaps support",
   "main": "index.js",
   "dependencies": {
     "through": "~2.2.0",
     "convert-source-map": "~0.2.3",
     "source-map": "~0.1.29",
-    "browserify-transform-tools": "~1.2.1"
+    "browserify-transform-tools": "~1.4.2"
   },
   "peerDependencies": {
     "jade": "*"
