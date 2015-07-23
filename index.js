@@ -47,7 +47,10 @@ function getTransformFn(options) {
         }
 
         var result = compile(file, data, opts);
-        _this.queue(result);
+        result.dependencies.forEach(function(dep) {
+          _this.emit('file', dep);
+        });
+        _this.queue(result.body);
         _this.queue(null);
       });
     }
@@ -61,8 +64,8 @@ module.exports.register = register;
 
 function register() {
   require.extensions['.jade'] = function(module, filename) {
-    var js = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
-    return module._compile(js, filename);
+    var result = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
+    return module._compile(result.body, filename);
   }
 }
 
@@ -116,15 +119,23 @@ function withSourceMap(src, compiled, name) {
 
 function compile(file, template, options) {
     options.filename= file;
-    var fn;
-    if(jade.compileClient) {
-      fn = jade.compileClient(template, options);
+    var result;
+    if (jade.compileClientWithDependenciesTracked) {
+      result = jade.compileClientWithDependenciesTracked(template, options);
+    } else if (jade.compileClient) {
+      result = {
+        body: jade.compileClient(template, options).toString(),
+        dependencies: []
+      };
     } else {
       // jade < 1.0
       options.client = true;
-      fn = jade.compile(template, options);
+      result = {
+        body: jade.compile(template, options).toString(),
+        dependencies: []
+      }
     }
 
-    var generated = fn.toString();
-    return PREFIX + withSourceMap(template, generated, file);
+    result.body = PREFIX + withSourceMap(template, result.body, file);
+    return result;
 }
