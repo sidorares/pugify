@@ -100,7 +100,7 @@ function withSourceMap(src, compiled, name) {
       }
     }
 
-    var debugRe = /jade(_|\.)debug\.(shift|unshift)\([^)]*\);?/;
+    var debugRe = /jade(_|\.)debug\.(shift|unshift)\([^;]*\);/;
     var match;
     while(match = l.match(debugRe)) {
       l = replaceMatchWith(match, '');
