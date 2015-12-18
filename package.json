@@ -1,5 +1,5 @@
 {
-  "name": "browserify-jade",
+  "name": "pugify",
   "version": "1.0.2",
   "description": "browserify v2 plugin for jade with sourcemaps support",
   "main": "index.js",
