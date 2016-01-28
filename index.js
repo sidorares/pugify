@@ -28,7 +28,7 @@ function getTransformFn(options) {
   }
 
   return function (file) {
-    if (!/\.jade$/.test(file)) return through();
+    if (!/\.(pug|jade)/.test(file)) return through();
 
     var data = '';
     return through(write, end);
@@ -63,7 +63,7 @@ module.exports.root = null;
 module.exports.register = register;
 
 function register() {
-  require.extensions['.jade'] = function(module, filename) {
+  require.extensions['.pug', '.jade'] = function(module, filename) {
     var result = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
     return module._compile(result.body, filename);
   }
@@ -83,7 +83,7 @@ function withSourceMap(src, compiled, name) {
   var generator = new SourceMapGenerator({file: name + '.js'});
 
   compiledLines.forEach(function(l, lineno) {
-    var m = l.match(/^jade(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
+    var m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
     if (m) {
       var originalLine = Number(m[2]);
       var generatedLine = lineno + 2;
@@ -103,7 +103,7 @@ function withSourceMap(src, compiled, name) {
       }
     }
 
-    var debugRe = /jade(_|\.)debug\.(shift|unshift)\([^;]*\);/;
+    var debugRe = /(pug|jade)(_|\.)debug\.(shift|unshift)\([^;]*\);/;
     var match;
     while(match = l.match(debugRe)) {
       l = replaceMatchWith(match, '');
