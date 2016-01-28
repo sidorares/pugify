@@ -28,7 +28,7 @@ function getTransformFn(options) {
   }
 
   return function (file) {
-    if (!/\.(pug|jade)/.test(file)) return through();
+    if (!/\.(pug|jade)$/.test(file)) return through();
 
     var data = '';
     return through(write, end);
