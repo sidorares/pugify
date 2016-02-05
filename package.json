@@ -2,7 +2,8 @@
   "name": "pugify",
   "version": "1.0.2",
   "description": "browserify v2 plugin for jade with sourcemaps support",
-  "main": "index.js",
+  "main": "index.compiled.js",
+  "jsnext:main": "index.js",
   "dependencies": {
     "through": "~2.2.0",
     "convert-source-map": "~0.2.3",
@@ -13,17 +14,19 @@
     "jade": "*"
   },
   "devDependencies": {
-    "tap": "~0.4.0",
-    "browserify": ">=2 <4.0.0"
+    "babel-cli": "^6.4.5",
+    "browserify": ">=2 <4.0.0",
+    "tap": "~0.4.0"
   },
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tap test/*.js",
+    "build": "babel index.js > index.compiled.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/sidorares/browserify-jade.git"
+    "url": "git://github.com/sidorares/pugify.git"
   },
-  "homepage": "https://github.com/sidorares/browserify-jade",
+  "homepage": "https://github.com/sidorares/pugify",
   "keywords": [
     "browserify",
     "v2",
