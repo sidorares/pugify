@@ -3,6 +3,7 @@
 const pug = require('pug')
 const xtend = require('xtend')
 const through = require('through')
+const tools = require('browserify-transform-tools')
 
 function pugify (file) {
   const opts = this || {}
@@ -14,19 +15,24 @@ function pugify (file) {
   return through(
     chunk => buffer += chunk.toString(),
     function end () {
-      let parsed
+      // Load config from package.json
+      tools.loadTransformConfig('pugify', file, (err, data) => {
+        if (err) throw new Error('Loading transform config')
 
-      try {
-        parsed = pug.compile(buffer, opts)
-      } catch (e) {
-        this.emit('error', e)
-        return this.queue(null)
-      }
+        let parsed
 
-      parsed.dependencies.forEach(dep => this.emit('file', dep))
+        try {
+          parsed = pug.compile(buffer, xtend(opts, data ? data.config : {}))
+        } catch (e) {
+          this.emit('error', e)
+          return this.queue(null)
+        }
 
-      this.queue(`var jade=require('pug-runtime');module.exports=${parsed.toString()}`)
-      this.queue(null)
+        parsed.dependencies.forEach(dep => this.emit('file', dep))
+
+        this.queue(`var jade=require('pug-runtime');module.exports=${parsed.toString()}`)
+        this.queue(null)
+      })
     }
   )
 }
