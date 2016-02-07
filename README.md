@@ -1,9 +1,9 @@
 Pugify
 ===============
 
-**[Pug](https://github.com/pugjs/jade)** (formerly Jade) transform module for [Browserify](https://github.com/substack/node-browserify), now with **source maps**!
+**[Pug](https://github.com/pugjs/jade)** (formerly Jade) transform module for [Browserify](https://github.com/substack/node-browserify), with **source maps** generation.
 
-Use with Browserify to import `.pug` or `.jade` template files and convert them to HTML in your code.
+Use with Browserify to import `.pug` or `.jade` template files and compile them into HTML.
 
 ## Usage
 
@@ -23,7 +23,7 @@ Use the `-t` flag with Browserify CLI tool
 
 ### Programmatically
 
-Use the `configure` method to set options. See the section below for clarification. You must enable
+Use the `configure` method to set options. See the "Options" section below for clarification.
 
     const browserify = require('browserify');
     const pugify = require('pugify');
@@ -66,7 +66,7 @@ Or for more complicated cases you can reference a `.js` file:
 And then in `pugify.config.js`:
 
     module.exports = {
-        pretty: (process.env.NODE_ENV === 'production') ? true : false
+      pretty: (process.env.NODE_ENV === 'production') ? true : false
     };
 
 ![screen shot 2013-08-28 at 5 02 16 pm](https://f.cloud.github.com/assets/173025/1040229/e0555b3e-0faf-11e3-919a-b9c0b1489077.png)
