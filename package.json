@@ -1,7 +1,7 @@
 {
   "name": "pugify",
-  "version": "1.0.2",
-  "description": "browserify v2 plugin for jade with sourcemaps support",
+  "version": "2.0.0",
+  "description": "Pug transform module for Browserify, with source maps",
   "main": "index.compiled.js",
   "jsnext:main": "index.js",
   "dependencies": {
