@@ -6,7 +6,7 @@ test('no options bundle', function(t) {
     t.plan(1);
     var b = browserify();
     b.add(__dirname + '/../example/bar.js');
-    b.transform(__dirname + '/..');
+    b.transform(__dirname + '/../index.compiled');
     b.bundle(function (err, src) {
         if (err) t.fail(err);
         testBundle(src, t);
@@ -17,9 +17,9 @@ test('options bundle', function(t) {
     t.plan(1);
     var b = browserify();
     b.add(__dirname + '/../example/bar.js');
-    b.transform(require('../index.js').jade({
-        pretty: false
-    }));
+    b.transform(require('../index.compiled').configure({
+        pretty: true
+    }))
     b.bundle(function (err, src) {
         if (err) t.fail(err);
         testBundle(src, t);
