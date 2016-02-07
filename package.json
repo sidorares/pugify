@@ -1,32 +1,36 @@
 {
   "name": "pugify",
-  "version": "1.0.2",
-  "description": "browserify v2 plugin for jade with sourcemaps support",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Pug transform module for Browserify, with source maps",
+  "main": "index.compiled.js",
+  "jsnext:main": "index.js",
   "dependencies": {
-    "through": "~2.2.0",
+    "browserify-transform-tools": "~1.4.2",
     "convert-source-map": "~0.2.3",
     "source-map": "~0.1.29",
-    "browserify-transform-tools": "~1.4.2"
-  },
-  "peerDependencies": {
-    "jade": "*"
+    "through": "~2.2.0",
+    "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "tap": "~0.4.0",
-    "browserify": ">=2 <4.0.0"
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "browserify": ">=2 <4.0.0",
+    "pug": "^0.1.0",
+    "tap": "~0.4.0"
   },
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tap test/*.js",
+    "build": "babel index.js > index.compiled.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/sidorares/browserify-jade.git"
+    "url": "git://github.com/sidorares/pugify.git"
   },
-  "homepage": "https://github.com/sidorares/browserify-jade",
+  "homepage": "https://github.com/sidorares/pugify",
   "keywords": [
     "browserify",
     "v2",
+    "pug",
     "jade",
     "plugin",
     "transform",

@@ -1,36 +1,75 @@
-browserify-jade
+Pugify
 ===============
 
-jade transform for browserify v2. Sourcemaps generation included.
+**[Pug](https://github.com/pugjs/jade)** (formerly Jade) transform module for [Browserify](https://github.com/substack/node-browserify), with **source maps** generation.
+
+Use with Browserify to import `.pug` or `.jade` template files and compile them into HTML.
+
+## Usage
+
+Install to your project:
+
+    npm install --save pugify
+
+You will need to install Pug:
+
+    npm install --save pug
+
+### Command Line
+
+Use the `-t` flag with Browserify CLI tool
+
+    browserify -t pugify --debug main.js > bundle.js
+
+### Programmatically
+
+Use the `configure` method to set options. See the "Options" section below for clarification.
+
+    const browserify = require('browserify');
+    const pugify = require('pugify');
+
+    const b = browserify('./main.js', { debug: true });
+    b.transform(pugify);
+    b.bundle().pipe(fs.createWriteStream('./bundle.js'));
+
+Note: Browserify's debug mode must be enabled to generate source maps.
+
+An example `main.js`:
+
+    import template from './template.pug'
+    document.body.innerHTML = template({ title: 'Hello World!' })
+
+And `template.pug`:
+
+    section
+      h1= title
+## Options
+
+If you're using Pugify programmatically, use the `configure` method to pass options to the Pug compiler:
+
+    const pugify = require('pugify').configure({
+      pretty: true
+    });
+
+    b.transform(pugify);
+
+Otherwise, you can pass options by adding a `"pugify"` section to your `package.json`. You can either include parameters directly:
+
+    "pugify": {
+      "pretty": false
+    }
+
+Or for more complicated cases you can reference a `.js` file:
+
+    "pugify": "/path/to/pugify.config.js"
+
+And then in `pugify.config.js`:
+
+    module.exports = {
+      pretty: (process.env.NODE_ENV === 'production') ? true : false
+    };
 
 ![screen shot 2013-08-28 at 5 02 16 pm](https://f.cloud.github.com/assets/173025/1040229/e0555b3e-0faf-11e3-919a-b9c0b1489077.png)
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/sidorares/browserify-jade/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
-### Configuration
-
-If you are using browserify-jade programatically, you can pass options to the Jade compiler by
-calling `jade()` on the browserify-jade transform:
-
-    var b = browserify();
-    b.transform(require('browserify-jade').jade({
-        pretty: false
-    }));
-
-If you are using browserify-jade in a command line build, you can pass parameters by adding a
-"browserify-jade" section to your package.json.  You can either include parameters directly:
-
-    "browserify-jade": {
-        "pretty": false
-    }
-
-or for more complicated cases you can reference a .js file:
-
-    "browserify-jade": "./assets/browserify-jade-config.js"
-
-And then in browserify-jade-config.js:
-
-    module.exports = {
-        pretty: (process.env.NODE_ENV == 'production')?true:false
-    };

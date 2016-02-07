@@ -1,141 +1,77 @@
-var fs = require('fs');
+'use strict'
 
-var jade           = require('jade');
-var through        = require('through');
-var transformTools = require('browserify-transform-tools');
+const pug = require('pug')
+const xtend = require('xtend')
+const through = require('through')
+const convert = require('convert-source-map')
+const tools = require('browserify-transform-tools')
+const SourceMapGenerator = require('source-map').SourceMapGenerator
 
-var SourceMapGenerator = require('source-map').SourceMapGenerator;
-var convert   = require('convert-source-map');
+const defaultOptions = {
+  pretty: false,
+  compileDebug: true
+}
 
-var PREFIX = "var jade = require('jade/lib/runtime.js');\nmodule.exports=";
+// RegEx
+const FILE_EXTENSION_REGEX = /\.(pug|jade)$/
+const LINE_NUMBER_REGEX = /^;jade_debug_line = ([0-9]+)/
 
-var defaultJadeOptions = {
-  path: __dirname,
-  compileDebug: true,
-  pretty: true,
-};
+function generateSourceMaps (src, compiled, file) {
+  const lines = compiled.split('\n')
+  const generator = new SourceMapGenerator({ file: `${file}.js` })
 
-function getTransformFn(options) {
-  var key;
-  var opts = {};
-  for(key in defaultJadeOptions) {
-    opts[key] = defaultJadeOptions[key];
-  }
+  lines.forEach((line, num) => {
+    const match = line.match(LINE_NUMBER_REGEX)
+    if (!match || match[1] < 1) return
 
-  options = options || {};
-  for(key in options) {
-    opts[key] = options[key];
-  }
+    generator.addMapping({
+      source: file,
+      generated: { column: 0, line: num + 2 },
+      original: { column: 0, line: Number(match[1]) }
+    })
+  })
 
-  return function (file) {
-    if (!/\.(pug|jade)$/.test(file)) return through();
+  generator.setSourceContent(file, src)
 
-    var data = '';
-    return through(write, end);
+  const map = convert.fromJSON(generator.toString())
+  lines.push(map.toComment())
 
-    function write (buf) {
-      data += buf;
-    }
+  return lines.join('\n')
+}
+
+function pugify (file, opts) {
+  if (!FILE_EXTENSION_REGEX.test(file)) return through()
+
+  let buffer = ''
+
+  return through(
+    chunk => buffer += chunk.toString(),
     function end () {
-      var _this = this;
-      configData = transformTools.loadTransformConfig('browserify-jade', file, function(err, configData) {
-        if(configData) {
-          var config = configData.config || {};
-          for(key in config) {
-            opts[key] = config[key];
-          }
+      // Load config from package.json
+      tools.loadTransformConfig('pugify', file, (err, data) => {
+        if (err) throw new Error(err)
+        else opts = xtend(defaultOptions, opts || {}, data ? data.config : {})
+
+        let parsed, sourceMapped
+
+        try {
+          parsed = pug.compile(buffer, opts)
+          sourceMapped = generateSourceMaps(buffer, parsed.toString(), file)
+        } catch (e) {
+          this.emit('error', e)
+          return this.queue(null)
         }
 
-        var result = compile(file, data, opts);
-        result.dependencies.forEach(function(dep) {
-          _this.emit('file', dep);
-        });
-        _this.queue(result.body);
-        _this.queue(null);
-      });
+        parsed.dependencies.forEach(dep => this.emit('file', dep))
+
+        this.queue(`var jade=require('pug-runtime');module.exports=${sourceMapped}`)
+        this.queue(null)
+      })
     }
-  };
+  )
 }
 
-module.exports = getTransformFn();
-module.exports.jade = getTransformFn;
-module.exports.root = null;
-module.exports.register = register;
+// Return new transform with custom options
+pugify.configure = (userOptions) => (file, opts) => pugify(file, xtend(opts, userOptions))
 
-function register() {
-  require.extensions['.pug', '.jade'] = function(module, filename) {
-    var result = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
-    return module._compile(result.body, filename);
-  }
-}
-
-function replaceMatchWith(match, newContent)
-{
-  var src = match.input;
-  return src.slice(0, match.index) + newContent + src.slice(match.index + match[0].length);
-}
-
-function withSourceMap(src, compiled, name) {
-
-  //return compiled;
-
-  var compiledLines = compiled.split('\n');
-  var generator = new SourceMapGenerator({file: name + '.js'});
-
-  compiledLines.forEach(function(l, lineno) {
-    var m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
-    if (m) {
-      var originalLine = Number(m[2]);
-      var generatedLine = lineno + 2;
-
-      if (originalLine > 0) {
-        generator.addMapping({
-          generated: {
-            line: generatedLine,
-            column: 0
-          },
-          source: name,
-          original: {
-            line: originalLine,
-            column: 0
-          }
-        });
-      }
-    }
-
-    var debugRe = /(pug|jade)(_|\.)debug\.(shift|unshift)\([^;]*\);/;
-    var match;
-    while(match = l.match(debugRe)) {
-      l = replaceMatchWith(match, '');
-    }
-    compiledLines[lineno] =l;
-  });
-  generator.setSourceContent(name, src);
-
-  var map = convert.fromJSON(generator.toString());
-  compiledLines.push(map.toComment());
-  return compiledLines.join('\n');
-}
-
-function compile(file, template, options) {
-    options.filename= file;
-    var result;
-    if (jade.compileClientWithDependenciesTracked) {
-      result = jade.compileClientWithDependenciesTracked(template, options);
-    } else if (jade.compileClient) {
-      result = {
-        body: jade.compileClient(template, options).toString(),
-        dependencies: []
-      };
-    } else {
-      // jade < 1.0
-      options.client = true;
-      result = {
-        body: jade.compile(template, options).toString(),
-        dependencies: []
-      }
-    }
-
-    result.body = PREFIX + withSourceMap(template, result.body, file);
-    return result;
-}
+module.exports = pugify
