@@ -34,3 +34,17 @@ And then in browserify-jade-config.js:
     module.exports = {
         pretty: (process.env.NODE_ENV == 'production')?true:false
     };
+
+To disable sourcemap generation, which results in smaller compiled files for production builds,
+set jade option `compileDebug` to false in the options:
+
+    var b = browserify();
+    b.transform(require('browserify-jade').jade({
+        compileDebug: false
+    }));
+
+ or in package.json:
+
+     "browserify-jade": {
+        "compileDebug": false
+    }
