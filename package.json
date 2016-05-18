@@ -1,6 +1,6 @@
 {
   "name": "pugify",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "browserify v2 plugin for jade with sourcemaps support",
   "main": "index.js",
   "dependencies": {
@@ -10,7 +10,7 @@
     "through": "~2.3.8"
   },
   "peerDependencies": {
-    "jade": "*"
+    "jade": "1.x"
   },
   "devDependencies": {
     "tap": "^5.4.4",

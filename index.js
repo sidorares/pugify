@@ -63,10 +63,10 @@ module.exports.root = null;
 module.exports.register = register;
 
 function register() {
-  require.extensions['.pug', '.jade'] = function(module, filename) {
+  require.extensions['.pug'] = require.extensions['.jade'] = function(module, filename) {
     var result = compile(filename, fs.readFileSync(filename, 'utf-8'), {compileDebug: true});
     return module._compile(result.body, filename);
-  }
+  };
 }
 
 function replaceMatchWith(match, newContent)
@@ -77,13 +77,13 @@ function replaceMatchWith(match, newContent)
 
 function withSourceMap(src, compiled, name) {
 
-  //return compiled;
-
   var compiledLines = compiled.split('\n');
   var generator = new SourceMapGenerator({file: name + '.js'});
 
   compiledLines.forEach(function(l, lineno) {
-    var m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
+    var m = l.match(/^jade(_|\.)debug\.unshift\(new jade\.DebugItem\( ([0-9]+)/);
+    // Check for older jade debug line format
+    if (!m) m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
     if (m) {
       var originalLine = Number(m[2]);
       var generatedLine = lineno + 2;
@@ -110,6 +110,15 @@ function withSourceMap(src, compiled, name) {
     }
     compiledLines[lineno] =l;
   });
+
+  // Remove jade debug lines at beginning and end of compiled version
+  if (/var jade_debug = /.test(compiledLines[1])) compiledLines[1] = '';
+  if (/try \{/.test(compiledLines[2])) compiledLines[2] = '';
+  var l = compiledLines.length;
+  if (/\} catch \(err\) \{/.test(compiledLines[l-4])) {
+    compiledLines[l-2] = compiledLines[l-3] = compiledLines[l-4] = '';
+  }
+
   generator.setSourceContent(name, src);
 
   var map = convert.fromJSON(generator.toString());
@@ -133,9 +142,11 @@ function compile(file, template, options) {
       result = {
         body: jade.compile(template, options).toString(),
         dependencies: []
-      }
+      };
     }
+    if (options.compileDebug)
+      result.body = withSourceMap(template, result.body, file);
 
-    result.body = PREFIX + withSourceMap(template, result.body, file);
+    result.body = PREFIX + result.body;
     return result;
 }
