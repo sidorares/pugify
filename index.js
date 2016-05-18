@@ -98,7 +98,7 @@ function withSourceMap(src, compiled, name) {
 
         if (!linesMatched[originalLine] &&
           (!/^jade_debug/.test(compiledLines[lineno+1]) || oldFormat))
-            generatedLine = lineno + 2;
+            generatedLine = lineno + 3; // 1-based and allow for PREFIX extra line
 
         if (generatedLine) {
 
