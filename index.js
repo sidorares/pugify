@@ -38,7 +38,7 @@ function getTransformFn(options) {
     }
     function end () {
       var _this = this;
-      configData = transformTools.loadTransformConfig('browserify-jade', file, function(err, configData) {
+      configData = transformTools.loadTransformConfig('browserify-jade', file, {fromSourceFileDir: true}, function(err, configData) {
         if(configData) {
           var config = configData.config || {};
           for(key in config) {
