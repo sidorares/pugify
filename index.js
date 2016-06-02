@@ -46,11 +46,15 @@ function getTransformFn(options) {
           }
         }
 
-        var result = compile(file, data, opts);
-        result.dependencies.forEach(function(dep) {
-          _this.emit('file', dep);
-        });
-        _this.queue(result.body);
+        try {
+          var result = compile(file, data, opts);
+          result.dependencies.forEach(function(dep) {
+            _this.emit('file', dep);
+          });
+          _this.queue(result.body);
+        } catch (e) {
+          _this.emit("error", e);
+        }
         _this.queue(null);
       });
     }
