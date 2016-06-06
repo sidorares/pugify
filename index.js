@@ -38,7 +38,7 @@ function getTransformFn(options) {
     }
     function end () {
       var _this = this;
-      configData = transformTools.loadTransformConfig('browserify-jade', file, function(err, configData) {
+      configData = transformTools.loadTransformConfig('browserify-jade', file, {fromSourceFileDir: true}, function(err, configData) {
         if(configData) {
           var config = configData.config || {};
           for(key in config) {
@@ -46,11 +46,15 @@ function getTransformFn(options) {
           }
         }
 
-        var result = compile(file, data, opts);
-        result.dependencies.forEach(function(dep) {
-          _this.emit('file', dep);
-        });
-        _this.queue(result.body);
+        try {
+          var result = compile(file, data, opts);
+          result.dependencies.forEach(function(dep) {
+            _this.emit('file', dep);
+          });
+          _this.queue(result.body);
+        } catch (e) {
+          _this.emit("error", e);
+        }
         _this.queue(null);
       });
     }
@@ -81,25 +85,41 @@ function withSourceMap(src, compiled, name) {
   var generator = new SourceMapGenerator({file: name + '.js'});
 
   compiledLines.forEach(function(l, lineno) {
+    var oldFormat = false;
+    var generatedLine;
+    var linesMatched = {};
+
     var m = l.match(/^jade(_|\.)debug\.unshift\(new jade\.DebugItem\( ([0-9]+)/);
     // Check for older jade debug line format
-    if (!m) m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
+    if (!m) {
+      m = l.match(/^(pug|jade)(_|\.)debug\.unshift\(\{ lineno: ([0-9]+)/);
+      oldFormat = !!m;
+    }
     if (m) {
       var originalLine = Number(m[2]);
-      var generatedLine = lineno + 2;
 
       if (originalLine > 0) {
-        generator.addMapping({
-          generated: {
-            line: generatedLine,
-            column: 0
-          },
-          source: name,
-          original: {
-            line: originalLine,
-            column: 0
-          }
-        });
+
+        if (!linesMatched[originalLine] &&
+          (!/^jade_debug/.test(compiledLines[lineno+1]) || oldFormat))
+            generatedLine = lineno + 3; // 1-based and allow for PREFIX extra line
+
+        if (generatedLine) {
+
+          linesMatched[originalLine] = true;
+
+          generator.addMapping({
+            generated: {
+              line: generatedLine,
+              column: 0
+            },
+            source: name,
+            original: {
+              line: originalLine,
+              column: 0
+            }
+          });
+        }
       }
     }
 
@@ -114,9 +134,9 @@ function withSourceMap(src, compiled, name) {
   // Remove jade debug lines at beginning and end of compiled version
   if (/var jade_debug = /.test(compiledLines[1])) compiledLines[1] = '';
   if (/try \{/.test(compiledLines[2])) compiledLines[2] = '';
-  var l = compiledLines.length;
-  if (/\} catch \(err\) \{/.test(compiledLines[l-4])) {
-    compiledLines[l-2] = compiledLines[l-3] = compiledLines[l-4] = '';
+  var ln = compiledLines.length;
+  if (/\} catch \(err\) \{/.test(compiledLines[ln-4])) {
+    compiledLines[ln-2] = compiledLines[ln-3] = compiledLines[ln-4] = '';
   }
 
   generator.setSourceContent(name, src);
