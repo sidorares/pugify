@@ -46,11 +46,15 @@ function getTransformFn(options) {
           }
         }
 
-        var result = compile(file, data, opts);
-        result.dependencies.forEach(function(dep) {
-          _this.emit('file', dep);
-        });
-        _this.queue(result.body);
+        try {
+          var result = compile(file, data, opts);
+          result.dependencies.forEach(function(dep) {
+            _this.emit('file', dep);
+          });
+          _this.queue(result.body);
+        } catch (e) {
+          _this.emit("error", e);
+        }
         _this.queue(null);
       });
     }
@@ -89,19 +93,19 @@ function withSourceMap(src, compiled, name) {
       var generatedLine = lineno + 2;
 
       if (originalLine > 0) {
-        generator.addMapping({
-          generated: {
-            line: generatedLine,
-            column: 0
-          },
-          source: name,
-          original: {
-            line: originalLine,
-            column: 0
-          }
-        });
+          generator.addMapping({
+            generated: {
+              line: generatedLine,
+              column: 0
+            },
+            source: name,
+            original: {
+              line: originalLine,
+              column: 0
+            }
+          });
+        }
       }
-    }
 
     var debugRe = /(pug|jade)(_|\.)debug\.(shift|unshift)\([^;]*\);/;
     var match;
