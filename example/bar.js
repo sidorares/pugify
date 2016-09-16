@@ -1,4 +1,4 @@
-var tmpl = require('./foo.jade');
+var tmpl = require('./foo.pug');
 var data = require('./params.json');
 
 tmpl(data);
