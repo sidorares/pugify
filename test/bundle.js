@@ -17,7 +17,7 @@ test('options bundle', function(t) {
     t.plan(1);
     var b = browserify();
     b.add(__dirname + '/../example/bar.js');
-    b.transform(require('../index.js').jade({
+    b.transform(require('../index.js').pug({
         pretty: false
     }));
     b.bundle(function (err, src) {

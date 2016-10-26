@@ -1,31 +1,33 @@
 {
   "name": "pugify",
-  "version": "1.0.5",
-  "description": "browserify v2 plugin for jade with sourcemaps support",
+  "version": "2.0.0",
+  "description": "browserify v2 plugin for pug with sourcemaps support",
   "main": "index.js",
   "dependencies": {
-    "browserify-transform-tools": "~1.6.0",
-    "convert-source-map": "~1.2.0",
-    "jade": "~1.11.0",
-    "source-map": "~0.5.6",
-    "through": "~2.3.8"
+    "convert-source-map": "~1.3.0",
+    "browserify-transform-tools": "^1.6.0",
+    "pug": "^2.0.0-beta6",
+    "source-map": "^0.5.6",
+    "through": "^2.3.8"
   },
   "devDependencies": {
-    "tap": "^5.7.2",
-    "browserify": "^13.0.1"
+    "browserify": "^13.1.0",
+    "pug-runtime": "^2.0.2",
+    "tap": "^5.7.2"
   },
   "scripts": {
     "test": "tap test/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/sidorares/browserify-jade.git"
+    "url": "git://github.com/sidorares/pugify.git"
   },
-  "homepage": "https://github.com/sidorares/browserify-jade",
+  "homepage": "https://github.com/sidorares/pugify",
   "keywords": [
     "browserify",
     "v2",
     "jade",
+    "pug",
     "plugin",
     "transform",
     "source maps",
@@ -35,6 +37,9 @@
     {
       "name": "Andrey Sidorov",
       "email": "sidorares@yandex.ru"
+    },
+    {
+      "name": "David Willis"
     }
   ],
   "license": "MIT"
