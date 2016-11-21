@@ -136,7 +136,7 @@ function withSourceMap(src, compiled, name) {
         }
 
         //remove pug debug lines from within generated code
-        var debugRe = /;pug_debug_line = [0-9]+;pug_debug_filename = ".*";/;
+        var debugRe = /;pug_debug_line = [0-9]+;(pug_debug_filename = ".*";)?/;
         var match;
         while (match = l.match(debugRe)) {
             l = replaceMatchWith(match, '');
@@ -148,11 +148,11 @@ function withSourceMap(src, compiled, name) {
     // could be in a number of first few lines depending on source content
     var found = false;
     var line = 0;
+    var re = /var\spug_debug_filename.*/;
     while (!found && line < compiledLines.length) {
         var lnDebug = compiledLines[line];
-        if (/^function pug_rethrow/.test(lnDebug)) {
+        if (re.test(lnDebug)) {
             found = true;
-            var re = /var\spug_debug_filename.*/;
             compiledLines[line] = lnDebug.replace(re, '');
         }
         line++;
@@ -171,6 +171,7 @@ function withSourceMap(src, compiled, name) {
 
 function compile(file, template, options) {
     options.filename = file;
+    options.name = "template";
     var result;
     result = pug.compileClientWithDependenciesTracked(template, options);
     if (options.compileDebug)
