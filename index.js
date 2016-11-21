@@ -171,6 +171,7 @@ function withSourceMap(src, compiled, name) {
 
 function compile(file, template, options) {
     options.filename = file;
+    options.name = "template";
     var result;
     result = pug.compileClientWithDependenciesTracked(template, options);
     if (options.compileDebug)
