@@ -136,7 +136,7 @@ function withSourceMap(src, compiled, name) {
         }
 
         //remove pug debug lines from within generated code
-        var debugRe = /;pug_debug_line = [0-9]+;pug_debug_filename = ".*";/;
+        var debugRe = /;pug_debug_line = [0-9]+;(pug_debug_filename = ".*";)?/;
         var match;
         while (match = l.match(debugRe)) {
             l = replaceMatchWith(match, '');
