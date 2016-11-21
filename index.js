@@ -148,11 +148,11 @@ function withSourceMap(src, compiled, name) {
     // could be in a number of first few lines depending on source content
     var found = false;
     var line = 0;
+    var re = /var\spug_debug_filename.*/;
     while (!found && line < compiledLines.length) {
         var lnDebug = compiledLines[line];
-        if (/^function pug_rethrow/.test(lnDebug)) {
+        if (re.test(lnDebug)) {
             found = true;
-            var re = /var\spug_debug_filename.*/;
             compiledLines[line] = lnDebug.replace(re, '');
         }
         line++;
