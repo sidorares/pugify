@@ -1,6 +1,6 @@
 {
   "name": "pugify",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "browserify v2 plugin for pug with sourcemaps support",
   "main": "index.js",
   "dependencies": {
