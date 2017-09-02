@@ -7,7 +7,6 @@ var transformTools = require('browserify-transform-tools');
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert = require('convert-source-map');
 
-var PREFIX = "var pug = require('pug-runtime');\nmodule.exports=template;";
 
 var defaultPugOptions = {
     path: __dirname,
@@ -176,6 +175,8 @@ function compile(file, template, options) {
     result = pug.compileClientWithDependenciesTracked(template, options);
     if (options.compileDebug)
         result.body = withSourceMap(template, result.body, file);
+
+    var PREFIX = "var pug = require('"+(options.runtimePath === undefined ? "pug-runtime" : options.runtimePath)+"');\nmodule.exports=template;";
 
     result.body = PREFIX + result.body;
     return result;
