@@ -10,6 +10,22 @@ pug transform for browserify v2. Sourcemaps generation included.
 
 ### Configuration
 
+#### Format
+```javascript
+    var b = browserify();
+    # these options are passed directly to pug compiler
+    var pugConfig = {
+        pretty: false,
+        compileDebug: false
+    };
+    # if babelConfig is defined, the output will be transpiled using babel, and the options are passed into babel transpiler
+    # this is useful when you need to support old browsers, since pug compiles into ES6 format.
+    var babelConfig = {
+        presets: ['es2015']
+    };
+    b.transform(require('pugify').pug(pugConfig, babelConfig));
+```
+
 If you are using pugify programatically, you can pass options to the Pug compiler by
 calling `pug()` on the pugify transform:
 
