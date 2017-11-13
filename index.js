@@ -3,6 +3,7 @@ var fs = require('fs');
 var pug = require('pug');
 var through = require('through');
 var transformTools = require('browserify-transform-tools');
+var babel = require('babel-core');
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert = require('convert-source-map');
@@ -14,7 +15,7 @@ var defaultPugOptions = {
     pretty: true,
 };
 
-function getTransformFn(options) {
+function getTransformFn(options, babelOptions) {
     var key;
     var opts = {};
     for (key in defaultPugOptions) {
@@ -48,6 +49,9 @@ function getTransformFn(options) {
 
                 try {
                     var result = compile(file, data, opts);
+                    if (babelOptions && Object.keys(babelOptions).length > 0 && babelOptions.constructor === Object) {
+                      result.body = babel.transform(result.body, babelOptions).code;
+                    }
                     result.dependencies.forEach(function (dep) {
                         _this.emit('file', dep);
                     });
