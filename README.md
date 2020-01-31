@@ -15,7 +15,7 @@ pug transform for browserify v2. Sourcemaps generation included.
     var b = browserify();
     # these options are passed directly to pug compiler
     var pugConfig = {
-        pretty: false,
+        pretty: true,
         compileDebug: false
     };
     # if babelConfig is defined, the output will be transpiled using babel, and the options are passed into babel transpiler
@@ -32,7 +32,7 @@ calling `pug()` on the pugify transform:
 ```
     var b = browserify();
     b.transform(require('pugify').pug({
-        pretty: false
+        pretty: true
     }));
 ```
 
@@ -41,7 +41,7 @@ If you are using pugify in a command line build, you can pass parameters by addi
 
 ```
     "pugify": {
-        "pretty": false
+        "pretty": true
     }
 ```
 
@@ -55,7 +55,7 @@ And then in pugify-config.js:
 
 ```
     module.exports = {
-        pretty: (process.env.NODE_ENV == 'production') ? true : false
+        pretty: (process.env.NODE_ENV == 'production') ? false : true
     };
 ```
 
