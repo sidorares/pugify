@@ -12,7 +12,7 @@ var convert = require('convert-source-map');
 var defaultPugOptions = {
     path: __dirname,
     compileDebug: true,
-    pretty: true,
+    pretty: false,
 };
 
 function getTransformFn(options, babelOptions) {
