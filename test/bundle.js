@@ -1,7 +1,6 @@
 var test = require('tap').test;
 var browserify = require('browserify');
 var vm = require('vm');
-var util = require('util');
 var pugify = require('../index.js');
 
 test('no options bundle', function(t) {
@@ -31,7 +30,7 @@ test('options bundle', function(t) {
 test('bundle with babel transpiling options', function(t) {
     var b = browserify();
     b.add(__dirname + '/../example/es6.js');
-    b.transform(pugify.pug({ pretty: false }, { presets: ['es2015'] }));
+    b.transform(pugify.pug({ pretty: false }, { presets: ['@babel/preset-env'] }));
 
     b.bundle(function (err, src) {
         if (err) t.fail(err);

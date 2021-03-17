@@ -3,7 +3,7 @@ var fs = require('fs');
 var pug = require('pug');
 var through = require('through');
 var transformTools = require('browserify-transform-tools');
-var babel = require('babel-core');
+var babel = require('@babel/core');
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 var convert = require('convert-source-map');
@@ -110,7 +110,7 @@ function withSourceMap(src, compiled, name) {
                     // new include file - add to sourcemap
                     linesMatched[fname] = {};
                     try {
-                        var srcContent = fs.readFileSync(fname);
+                        var srcContent = fs.readFileSync(fname, 'utf-8');
                         generator.setSourceContent(fname, srcContent);
                     } catch (e) {}
                 }
